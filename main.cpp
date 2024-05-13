@@ -6,10 +6,12 @@
 
 using namespace std;
 
-GLfloat T = 180;
+GLfloat Cx = 0, Cy = 0, Cz = 3;
+GLfloat T = 0;
+GLfloat doorRotation = 0;
 void Spin()
 {
-	T = T + 0.01;
+	//T = T + 0.01;
 	if (T > 360)
 		T = 0;
 	glutPostRedisplay();
@@ -19,6 +21,11 @@ void MyInit()
 {
 	glClearColor(0, 1, 0, 1);
 	glEnable(GL_DEPTH_TEST);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glFrustum(-1, 1, -1, 1, 2, 10);
+	glMatrixMode(GL_MODELVIEW);
 }
 
 
@@ -70,93 +77,99 @@ void DrawHouse()
 		// front face
 		{-0.5, 0.0, 0.5},
 		{0.5, 0.0, 0.5},
-		{0.5, -0.4, 0.5},
-		{-0.5, -0.4, 0.5},
+		{0.5, -0.5, 0.5},
+		{-0.5, -0.5, 0.5},
 		// back face Z values become negatives
 		{-0.5, 0.0, -0.5},
 		{0.5, 0.0, -0.5},
-		{0.5, -0.4, -0.5},
-		{-0.5, -0.4, -0.5},
+		{0.5, -0.5, -0.5},
+		{-0.5, -0.5, -0.5},
 	};
 	// left window 
 	GLfloat Window1[4][3] = {
-		{0.30, -0.15, 0.50001},
-		{0.20, -0.15, 0.50001},
-		{0.20, -0.25, 0.50001},
-		{0.30, -0.25, 0.50001}
+		{0.30, -0.2, 0.50001},
+		{0.20, -0.2, 0.50001},
+		{0.20, -0.3, 0.50001},
+		{0.30, -0.3, 0.50001}
 	};
 	// right window
 	GLfloat Window2[4][3] = {
-		{-0.30, -0.15, 0.50001},
-		{-0.20, -0.15, 0.50001},
-		{-0.20, -0.25, 0.50001},
-		{-0.30, -0.25, 0.50001}
+		{-0.30, -0.2, 0.50001},
+		{-0.20, -0.2, 0.50001},
+		{-0.20, -0.3, 0.50001},
+		{-0.30, -0.3, 0.50001}
 	};
 	// door
 	GLfloat Door[4][3] = {
-		{0.05, -0.4, 0.50001},
-		{0.05, -0.25, 0.50001},
-		{-0.05, -0.25, 0.50001},
-		{-0.05, -0.4, 0.50001}
+		{0.05, -0.5, 0.50001},
+		{0.05, -0.3, 0.50001},
+		{-0.05, -0.3, 0.50001},
+		{-0.05, -0.5, 0.50001}
 	};
-
+	// rotate around (-0.05, -0.4, 0.50001)
+	// 
 	// 2nd floor	
 	GLfloat floor2[8][3] = {
 		// front face
-		{-0.5, 0.4, 0.5},
-		{0.5, 0.4, 0.5},
+		{-0.5, 0.5, 0.5},
+		{0.5, 0.5, 0.5},
 		{0.5, 0.0, 0.5},
 		{-0.5, 0.0, 0.5},
 		// back face Z values become negatives
-		{-0.5, 0.4, -0.5},
-		{0.5, 0.4, -0.5},
+		{-0.5, 0.5, -0.5},
+		{0.5, 0.5, -0.5},
 		{0.5, -0.0, -0.5},
 		{-0.5, -0.0, -0.5},
 	};
 	// left window 
 	GLfloat Window3[4][3] = {
-		{0.30, 0.15, 0.50001},
-		{0.20, 0.15, 0.50001},
-		{0.20, 0.25, 0.50001},
-		{0.30, 0.25, 0.50001}
+		{0.30, 0.2, 0.50001},
+		{0.20, 0.2, 0.50001},
+		{0.20, 0.3, 0.50001},
+		{0.30, 0.3, 0.50001}
 	};
 	// right window
 	GLfloat Window4[4][3] = {
-		{-0.30, 0.15, 0.50001},
-		{-0.20, 0.15, 0.50001},
-		{-0.20, 0.25, 0.50001},
-		{-0.30, 0.25, 0.50001}
+		{-0.30, 0.2, 0.50001},
+		{-0.20, 0.2, 0.50001},
+		{-0.20, 0.3, 0.50001},
+		{-0.30, 0.3, 0.50001}
 	};
 	// roof
 	GLfloat Roof[5][3] = {
 		// pyramid tip
-		{0.0, 0.75, 0},
+		{0.0, 0.8, 0},
 		// pyramid base
-		{-0.5, 0.4, 0.5},
-		{0.5, 0.4, 0.5},
-		{-0.5, 0.4, -0.5},
-		{0.5, 0.4, -0.5},
+		{-0.5, 0.5, 0.5},
+		{0.5, 0.5, 0.5},
+		{-0.5, 0.5, -0.5},
+		{0.5, 0.5, -0.5},
 
 	};
 
 	
 
-	glRotatef(T, 0, 1, 0); // rotate
-	
+	glRotatef(T, 0, 1, 0);
+
 	
 	
 	// draw the 1st floor walls
 	glColor3f(0.8f, 0.6f, 0.4f);
 	Rectangle(floor1[0], floor1[1], floor1[2], floor1[3], floor1[4], floor1[5], floor1[6], floor1[7]);
 
+
+	
 	// window
 	glColor3f(1, 1, 1);
 	RectangleFace(Window1[0], Window1[1], Window1[2], Window1[3]);
 	RectangleFace(Window2[0], Window2[1], Window2[2], Window2[3]);
 
-	// door
-	RectangleFace(Door[0], Door[1], Door[2], Door[3]);
-	
+
+	glPushMatrix(); 
+		glRotatef(doorRotation, 0, 1, 0);
+		glTranslatef(-0.05f, 0.0f, 0.00001f);
+		RectangleFace(Door[0], Door[1], Door[2], Door[3]);
+	glPopMatrix();
 
 	// draw the 2nd floor walls
 	glColor3f(0.8f, 0.7f, 0.5f);
@@ -175,6 +188,62 @@ void DrawBike() {
 
 }
 
+void button(unsigned char button, int x, int y) {
+	cout << x << " " << y << endl;
+	switch (button) {
+	case 'o': 
+		//296
+		doorRotation += 2.0;
+		cout << doorRotation << endl;
+		break;
+	case 'c': 
+		break;
+	case 'O':  
+		doorRotation = 0;
+		break;
+	case 'C':  
+
+		break;
+	case 'f': 
+
+		break;
+	case 'b': 
+		break;
+	case 'r': 
+		break;
+	case 'l':   
+		break;
+
+
+
+	case 't':  // rotate 3shan el test
+		T += 5.0;
+		break;
+
+
+
+	// camera hotkeys
+	case '4':
+		Cx = Cx - 0.5;
+		break;
+	case '7':
+		Cx = Cx + 0.5;
+		break;
+	case '5':
+		Cy = Cy - 0.5;
+		break;
+	case '8':
+		Cy = Cy + 0.5;
+		break;
+	case '6':
+		Cz = Cz - 0.5;
+		break;
+	case '9':
+		Cz = Cz + 0.5;
+		break;
+	}
+	glutPostRedisplay();  // Tell GLUT to redraw the scene (if needed)
+}
 
 void Display()
 {
@@ -182,6 +251,7 @@ void Display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// store the original matrix of the shapes
 	glLoadIdentity();
+	gluLookAt(Cx, Cy, Cz, 0, 0, 0, 0, 1, 0);
 	// draws house
 	DrawHouse();
 	// draws bike
@@ -202,7 +272,7 @@ int main(int argc, char *argv[])
 	glutCreateWindow("Basic OpenGL program");
 	
 	MyInit();
-
+	glutKeyboardFunc(button);
 	// ptr to function to execute and display
 	glutDisplayFunc(Display);
 
