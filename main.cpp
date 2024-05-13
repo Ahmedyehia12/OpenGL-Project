@@ -77,11 +77,11 @@ void Rectangle(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V
 	//draw faces
 	RectangleFace(V0, V1, V2, V3); //Front
 
-	//RectangleFace(V4, V5, V6, V7); //Back
+	RectangleFace(V4, V5, V6, V7); //Back
 
-	//RectangleFace(V4, V0, V3, V7); //Left
+	RectangleFace(V4, V0, V3, V7); //Left
 
-	//RectangleFace(V1, V5, V6, V2); //Right
+	RectangleFace(V1, V5, V6, V2); //Right
 
 	RectangleFace(V0, V1, V5, V4); //Top
 
@@ -103,27 +103,6 @@ void DrawHouse()
 		{0.5, -0.5, -0.5},
 		{-0.5, -0.5, -0.5},
 	};
-	// left window 
-	GLfloat Window1[4][3] = {
-		{0.20, -0.2, 0.50001},  // upperleft
-		{0.30, -0.2, 0.50001}, // upper right
-		{0.30, -0.3, 0.50001}, // bottom right
-		{0.20, -0.3, 0.50001} // bottom left
-	};
-	// right window
-	GLfloat Window2[4][3] = {
-		{-0.30, -0.2, 0.50001}, // upper left
-		{-0.20, -0.2, 0.50001}, // upper right
-		{-0.20, -0.3, 0.50001}, // lower right
-		{-0.30, -0.3, 0.50001}  // lower left
-	};
-	// door
-	GLfloat Door[4][3] = {
-		{0.05, -0.5, 0.5001},
-		{0.05, -0.3, 0.5001},
-		{-0.05, -0.3, 0.5001},
-		{-0.05, -0.5, 0.5001}
-	};
 	// 2nd floor	
 	GLfloat floor2[8][3] = {
 		// front face
@@ -137,19 +116,40 @@ void DrawHouse()
 		{0.5, -0.0, -0.5},
 		{-0.5, -0.0, -0.5},
 	};
-	// left window 
+	// lower right
+	GLfloat Window1[4][3] = {
+		{0.20, -0.2, 0.50001},  // upperleft
+		{0.30, -0.2, 0.50001}, // upper right
+		{0.30, -0.3, 0.50001}, // bottom right
+		{0.20, -0.3, 0.50001} // bottom left
+	};
+	// lower left
+	GLfloat Window2[4][3] = {
+		{-0.30, -0.2, 0.50001}, // upper left
+		{-0.20, -0.2, 0.50001}, // upper right
+		{-0.20, -0.3, 0.50001}, // lower right
+		{-0.30, -0.3, 0.50001}  // lower left
+	};
+	// upper right 
 	GLfloat Window3[4][3] = {
 		{0.30, 0.2, 0.50001},
 		{0.20, 0.2, 0.50001},
 		{0.20, 0.3, 0.50001},
 		{0.30, 0.3, 0.50001}
 	};
-	// right window
+	// upper left 
 	GLfloat Window4[4][3] = {
 		{-0.30, 0.2, 0.50001},
 		{-0.20, 0.2, 0.50001},
 		{-0.20, 0.3, 0.50001},
 		{-0.30, 0.3, 0.50001}
+	};
+	// door
+	GLfloat Door[4][3] = {
+		{0.05, -0.5, 0.5001},
+		{0.05, -0.3, 0.5001},
+		{-0.05, -0.3, 0.5001},
+		{-0.05, -0.5, 0.5001}
 	};
 
 	// roof
@@ -180,24 +180,28 @@ void DrawHouse()
 
 	// windows
 	glColor3f(1, 1, 1);
+	// windows on the right side
 	glPushMatrix();
 		openRightWindows();
 		RectangleFace(Window1[0], Window1[1], Window1[2], Window1[3]);
 		RectangleFace(Window3[0], Window3[1], Window3[2], Window3[3]);
 	glPopMatrix();
-
+	// windows on the left side
 	glPushMatrix();
 		openLeftWindows();
 		RectangleFace(Window2[0], Window2[1], Window2[2], Window2[3]);
 		RectangleFace(Window4[0], Window4[1], Window4[2], Window4[3]);
 	glPopMatrix();
 
-	
 	// door
 	glPushMatrix(); 
 		openDoor();
 		RectangleFace(Door[0], Door[1], Door[2], Door[3]);
 	glPopMatrix();
+	
+	// draw roof
+	glColor3f(0.7f, 0.2f, 0.1f);
+	Pyramid(Roof[0], Roof[1], Roof[2], Roof[3], Roof[4]);
 	
 	// shadows
 	glColor3f(0, 0, 0);
@@ -208,11 +212,8 @@ void DrawHouse()
 	RectangleFace(Window4[0], Window4[1], Window4[2], Window4[3]);
 
 	
-
-	// draw roof
-	glColor3f(0.7f, 0.2f, 0.1f);
-	Pyramid(Roof[0], Roof[1], Roof[2], Roof[3], Roof[4]);
 }
+
 void DrawBike() {
 
 }
@@ -223,13 +224,13 @@ void button(unsigned char button, int x, int y) {
 		doorRotation = 73.0f;
 		break;
 	case 'c': 
-		doorRotation = 0;
+		doorRotation = 0.0f;
 		break;
 	case 'O':  
 		windowRotation = 73.0f;
 		break;
 	case 'C':  
-		windowRotation = 0;
+		windowRotation = 0.0f;
 		break;
 	case 'f': 
 		break;
@@ -243,7 +244,7 @@ void button(unsigned char button, int x, int y) {
 
 
 	case 't':  // rotate 3shan el test
-		T += 1.0;
+		T += 5.0;
 		break;
 
 	// camera hotkeys
