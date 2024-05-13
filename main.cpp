@@ -16,7 +16,17 @@ void Spin()
 		T = 0;
 	glutPostRedisplay();
 }
-
+void Ground() {
+	// Light(Gray);// Brown color for walls
+	glBegin(GL_QUADS);
+	// the ground should be the base of the house
+	glColor3f(0.5, 0.5, 0.5);
+	glVertex3f(-1, -0.5, 1);
+	glVertex3f(1, -0.5, 1);
+	glVertex3f(1, -0.5, -1);
+	glVertex3f(-1, -0.5, -1);
+	glEnd();
+}
 void MyInit()
 {
 	glClearColor(0, 1, 0, 1);
@@ -32,9 +42,9 @@ void MyInit()
 void PyramidFace(GLfloat A[], GLfloat B[], GLfloat C[])
 {
 	glBegin(GL_POLYGON);
-		glVertex3fv(A);
-		glVertex3fv(B);
-		glVertex3fv(C);
+	glVertex3fv(A);
+	glVertex3fv(B);
+	glVertex3fv(C);
 	glEnd();
 }
 void Pyramid(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[])
@@ -48,10 +58,10 @@ void Pyramid(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[
 void RectangleFace(GLfloat A[], GLfloat B[], GLfloat C[], GLfloat D[])
 {
 	glBegin(GL_POLYGON);
-		glVertex3fv(A);
-		glVertex3fv(B);
-		glVertex3fv(C);
-		glVertex3fv(D);
+	glVertex3fv(A);
+	glVertex3fv(B);
+	glVertex3fv(C);
+	glVertex3fv(D);
 	glEnd();
 }
 void Rectangle(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[], GLfloat V5[], GLfloat V6[], GLfloat V7[])
@@ -147,28 +157,28 @@ void DrawHouse()
 
 	};
 
-	
+
 
 	glRotatef(T, 0, 1, 0);
 
-	
-	
+
+
 	// draw the 1st floor walls
 	glColor3f(0.8f, 0.6f, 0.4f);
 	Rectangle(floor1[0], floor1[1], floor1[2], floor1[3], floor1[4], floor1[5], floor1[6], floor1[7]);
 
 
-	
+
 	// window
 	glColor3f(1, 1, 1);
 	RectangleFace(Window1[0], Window1[1], Window1[2], Window1[3]);
 	RectangleFace(Window2[0], Window2[1], Window2[2], Window2[3]);
 
 
-	glPushMatrix(); 
-		glRotatef(doorRotation, 0, 1, 0);
-		glTranslatef(-0.05f, 0.0f, 0.00001f);
-		RectangleFace(Door[0], Door[1], Door[2], Door[3]);
+	glPushMatrix();
+	glRotatef(doorRotation, 0, 1, 0);
+	glTranslatef(-0.05f, 0.0f, 0.00001f);
+	RectangleFace(Door[0], Door[1], Door[2], Door[3]);
 	glPopMatrix();
 
 	// draw the 2nd floor walls
@@ -183,6 +193,7 @@ void DrawHouse()
 	// draw roof
 	glColor3f(0.7f, 0.2f, 0.1f);
 	Pyramid(Roof[0], Roof[1], Roof[2], Roof[3], Roof[4]);
+
 }
 void DrawBike() {
 
@@ -191,27 +202,27 @@ void DrawBike() {
 void button(unsigned char button, int x, int y) {
 	cout << x << " " << y << endl;
 	switch (button) {
-	case 'o': 
+	case 'o':
 		//296
 		doorRotation += 2.0;
 		cout << doorRotation << endl;
 		break;
-	case 'c': 
+	case 'c':
 		break;
-	case 'O':  
+	case 'O':
 		doorRotation = 0;
 		break;
-	case 'C':  
+	case 'C':
 
 		break;
-	case 'f': 
+	case 'f':
 
 		break;
-	case 'b': 
+	case 'b':
 		break;
-	case 'r': 
+	case 'r':
 		break;
-	case 'l':   
+	case 'l':
 		break;
 
 
@@ -222,7 +233,7 @@ void button(unsigned char button, int x, int y) {
 
 
 
-	// camera hotkeys
+		// camera hotkeys
 	case '4':
 		Cx = Cx - 0.5;
 		break;
@@ -252,6 +263,10 @@ void Display()
 	// store the original matrix of the shapes
 	glLoadIdentity();
 	gluLookAt(Cx, Cy, Cz, 0, 0, 0, 0, 1, 0);
+	// draws the ground
+	Ground();
+	// translate the ground down to be the base of the house
+
 	// draws house
 	DrawHouse();
 	// draws bike
@@ -260,17 +275,17 @@ void Display()
 	glutSwapBuffers();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	// window initilization
 	glutInit(&argc, argv);
 	glutInitWindowPosition(50, 100);
-	glutInitWindowSize(800,800);
+	glutInitWindowSize(800, 800);
 
 	// color model and double buffer for 3d and depth buffer for Z  axis
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Basic OpenGL program");
-	
+
 	MyInit();
 	glutKeyboardFunc(button);
 	// ptr to function to execute and display
