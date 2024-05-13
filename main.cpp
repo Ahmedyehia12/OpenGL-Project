@@ -18,7 +18,17 @@ void Spin()
 		T = 0;
 	glutPostRedisplay();
 }
-
+void Ground() {
+	// Light(Gray);// Brown color for walls
+	glBegin(GL_QUADS);
+	// the ground should be the base of the house
+	glColor3f(0.5, 0.5, 0.5);
+	glVertex3f(-1, -0.501, 1);
+	glVertex3f(1, -0.501, 1);
+	glVertex3f(1, -0.501, -1);
+	glVertex3f(-1, -0.501, -1);
+	glEnd();
+}
 void MyInit()
 {
 	glClearColor(0, 1, 0, 1);
@@ -50,9 +60,9 @@ void openDoor() {
 void PyramidFace(GLfloat A[], GLfloat B[], GLfloat C[])
 {
 	glBegin(GL_POLYGON);
-		glVertex3fv(A);
-		glVertex3fv(B);
-		glVertex3fv(C);
+	glVertex3fv(A);
+	glVertex3fv(B);
+	glVertex3fv(C);
 	glEnd();
 }
 void Pyramid(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[])
@@ -66,10 +76,10 @@ void Pyramid(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[
 void RectangleFace(GLfloat A[], GLfloat B[], GLfloat C[], GLfloat D[])
 {
 	glBegin(GL_POLYGON);
-		glVertex3fv(A);
-		glVertex3fv(B);
-		glVertex3fv(C);
-		glVertex3fv(D);
+	glVertex3fv(A);
+	glVertex3fv(B);
+	glVertex3fv(C);
+	glVertex3fv(D);
 	glEnd();
 }
 void Rectangle(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[], GLfloat V5[], GLfloat V6[], GLfloat V7[])
@@ -168,8 +178,8 @@ void DrawHouse()
 	// rotate be button el t
 	glRotatef(T, 0, 1, 0);
 
-	
-	
+
+
 	// draw the 1st floor walls
 	glColor3f(0.8f, 0.6f, 0.4f);
 	Rectangle(floor1[0], floor1[1], floor1[2], floor1[3], floor1[4], floor1[5], floor1[6], floor1[7]);
@@ -234,11 +244,11 @@ void button(unsigned char button, int x, int y) {
 		break;
 	case 'f': 
 		break;
-	case 'b': 
+	case 'b':
 		break;
-	case 'r': 
+	case 'r':
 		break;
-	case 'l':   
+	case 'l':
 		break;
 
 
@@ -280,6 +290,10 @@ void Display()
 	// store the original matrix of the shapes
 	glLoadIdentity();
 	gluLookAt(Cx, Cy, Cz, 0, 0, 0, 0, 1, 0);
+	// draws the ground
+	Ground();
+	// translate the ground down to be the base of the house
+
 	// draws house
 	DrawHouse();
 	// draws bike
@@ -288,17 +302,17 @@ void Display()
 	glutSwapBuffers();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	// window initilization
 	glutInit(&argc, argv);
 	glutInitWindowPosition(50, 100);
-	glutInitWindowSize(800,800);
+	glutInitWindowSize(800, 800);
 
 	// color model and double buffer for 3d and depth buffer for Z  axis
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Basic OpenGL program");
-	
+
 	MyInit();
 	glutKeyboardFunc(button);
 	// ptr to function to execute and display
