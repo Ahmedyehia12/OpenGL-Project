@@ -17,16 +17,23 @@ void Spin()
 	glutPostRedisplay();
 }
 void Ground() {
-	// Light(Gray);// Brown color for walls
-	glBegin(GL_QUADS);
-	// the ground should be the base of the house
-	glColor3f(0.5, 0.5, 0.5);
-	glVertex3f(-1, -0.5, 1);
-	glVertex3f(1, -0.5, 1);
-	glVertex3f(1, -0.5, -1);
-	glVertex3f(-1, -0.5, -1);
+	// Draw the outer white circle
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 1.0, 1.0); // white color
+	for (int i = 0; i < 360; i++) {
+		glVertex3f(cos(i) * 1.085, -0.5, sin(i) * 1.085); // center at (0, -0.5, 0)
+	}
 	glEnd();
+	// Draw the inner black circle representing the ground
+	glBegin(GL_POLYGON);
+	glColor3f(0.25, 0.25, 0.25); // black color
+	for (int i = 0; i < 360; i++) {
+		glVertex3f(cos(i) * 1.0, -0.49, sin(i) * 1.0); // smaller radius circle, same y-coordinate
+	}
+	glEnd();
+
 }
+
 void MyInit()
 {
 	glClearColor(0, 1, 0, 1);
@@ -209,7 +216,7 @@ void Cuboid(GLfloat vertices[8][3]) {
 	glEnd();
 
 	// Draw sides
-	for (int i = 0; i < 4; i++){
+	for (int i = 0; i < 4; i++) {
 		glBegin(GL_QUADS);
 		int nxt = (i + 1) % 4;
 		glVertex3fv(vertices[i]);
@@ -382,51 +389,51 @@ void BicycleRear() {
 	// Wheel body
 	double x1 = -0.25, x2 = -0.29, diff = 0.01;
 	GLfloat C1[8][3] = {
-		{x1, -0.45, 0.7}, 
-		{x1 - diff, -0.45, 0.7}, 
-		{x1 - diff, -0.45, 0.71}, 
-		{x1, -0.45, 0.71}, 
+		{x1, -0.45, 0.7},
+		{x1 - diff, -0.45, 0.7},
+		{x1 - diff, -0.45, 0.71},
+		{x1, -0.45, 0.71},
 
-		{x2, -0.35, 0.7}, 
-		{x2 - diff, -0.35, 0.7}, 
-		{x2 - diff, -0.35, 0.71}, 
-		{x2, -0.35, 0.71} 
+		{x2, -0.35, 0.7},
+		{x2 - diff, -0.35, 0.7},
+		{x2 - diff, -0.35, 0.71},
+		{x2, -0.35, 0.71}
 	};
 
 	GLfloat C2[8][3] = {
-		{x1, -0.45, 0.73}, 
-		{x1 - diff, -0.45, 0.73}, 
-		{x1 - diff, -0.45, 0.74}, 
-		{x1, -0.45, 0.74}, 
+		{x1, -0.45, 0.73},
+		{x1 - diff, -0.45, 0.73},
+		{x1 - diff, -0.45, 0.74},
+		{x1, -0.45, 0.74},
 
-		{x2, -0.35, 0.73}, 
-		{x2 - diff, -0.35, 0.73}, 
-		{x2 - diff, -0.35, 0.74}, 
-		{x2, -0.35, 0.74}  
+		{x2, -0.35, 0.73},
+		{x2 - diff, -0.35, 0.73},
+		{x2 - diff, -0.35, 0.74},
+		{x2, -0.35, 0.74}
 	};
 
 	GLfloat C3[8][3] = {
-		{x1, -0.45, 0.7}, 
-		{x1 - diff, -0.45, 0.7}, 
-		{x1 - diff, -0.45, 0.74}, 
-		{x1, -0.45, 0.74}, 
+		{x1, -0.45, 0.7},
+		{x1 - diff, -0.45, 0.7},
+		{x1 - diff, -0.45, 0.74},
+		{x1, -0.45, 0.74},
 
-		{x1, -0.46, 0.7}, 
-		{x1 - diff, -0.46, 0.7}, 
-		{x1 - diff, -0.46, 0.74}, 
-		{x1, -0.46, 0.74} 
+		{x1, -0.46, 0.7},
+		{x1 - diff, -0.46, 0.7},
+		{x1 - diff, -0.46, 0.74},
+		{x1, -0.46, 0.74}
 	};
 
 	GLfloat C4[8][3] = {
-		{x2, -0.35, 0.7}, 
-		{x2 - diff, -0.35, 0.7}, 
-		{x2 - diff, -0.35, 0.74}, 
-		{x2, -0.35, 0.74}, 
+		{x2, -0.35, 0.7},
+		{x2 - diff, -0.35, 0.7},
+		{x2 - diff, -0.35, 0.74},
+		{x2, -0.35, 0.74},
 
-		{x2, -0.36, 0.7}, 
-		{x2 - diff, -0.36, 0.7}, 
-		{x2 - diff, -0.36, 0.74}, 
-		{x2, -0.36, 0.74} 
+		{x2, -0.36, 0.7},
+		{x2 - diff, -0.36, 0.7},
+		{x2 - diff, -0.36, 0.74},
+		{x2, -0.36, 0.74}
 	};
 
 	glColor3f(0, 0, 0);
@@ -436,7 +443,7 @@ void BicycleRear() {
 	Cuboid(C4);
 
 	// wheel itself
-	GLfloat WheelCentre[3] = {x1, -0.45, 0.72}; 
+	GLfloat WheelCentre[3] = { x1, -0.45, 0.72 };
 	Wheel(WheelCentre, 0.04);
 
 	double pi = 3.14159265359;
@@ -480,7 +487,7 @@ void BicycleRear() {
 		}
 	};
 
-	for(int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 		Cuboid(Support[i]);
 }
 
@@ -528,7 +535,7 @@ void BicycleMid() {
 		{-0.37, -0.32, 0.71},
 		{-0.38, -0.32, 0.71}
 	};
-	
+
 	Cuboid(Support);
 
 	// Handle
