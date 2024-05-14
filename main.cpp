@@ -30,14 +30,21 @@ void Ground() {
 	glBegin(GL_POLYGON);
 	glColor3f(1.0, 1.0, 1.0); // white color
 	for (int i = 0; i < 360; i++) {
-		glVertex3f(cos(i) * 1.085, -0.5, sin(i) * 1.085); // center at (0, -0.5, 0)
+		glVertex3f(cos(i) * 1.385, -0.5003, sin(i) * 1.385); // center at (0, -0.5, 0)
+	}
+	glEnd();
+	// Draw the inner white circle
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 1.0, 1.0); // white color
+	for (int i = 0; i < 360; i++) {
+		glVertex3f(cos(i) * 0.8, -0.5001, sin(i) * 0.8); // center at (0, -0.5, 0)
 	}
 	glEnd();
 	// Draw the inner black circle representing the ground
 	glBegin(GL_POLYGON);
 	glColor3f(0.25, 0.25, 0.25); // black color
 	for (int i = 0; i < 360; i++) {
-		glVertex3f(cos(i) * 1.0, -0.49, sin(i) * 1.0); // smaller radius circle, same y-coordinate
+		glVertex3f(cos(i) * 1.3, -0.5002, sin(i) * 1.3); // smaller radius circle, same y-coordinate
 	}
 	glEnd();
 
@@ -106,6 +113,8 @@ void Rectangle(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V
 	RectangleFace(V4, V0, V3, V7); //Left
 
 	RectangleFace(V1, V5, V6, V2); //Right
+
+	glColor3f(0, 0, 0);
 
 	RectangleFace(V0, V1, V5, V4); //Top
 
@@ -212,6 +221,7 @@ void DrawHouse()
 	glPopMatrix();
 
 	// door
+	glColor3f(0.7f, 0.2f, 0.1f);
 	glPushMatrix(); 
 		openDoor();
 		RectangleFace(Door[0], Door[1], Door[2], Door[3]);
@@ -505,12 +515,14 @@ void button(unsigned char button, int x, int y) {
 	case 'f': 
 		moveX -= 0.05;
 		rotInd = 1;
+		wheelRot = 0;
 		T = 0;
 		aroundHouse = false;
 		break;
 	case 'b':
 		moveX += 0.05;
 		rotInd = 1;
+		wheelRot = 0;
 		T = 0;
 		aroundHouse = false;
 		break;
