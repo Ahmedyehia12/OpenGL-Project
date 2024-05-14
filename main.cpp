@@ -9,6 +9,7 @@ using namespace std;
 GLfloat Cx = 0, Cy = 0, Cz = 3;
 GLfloat T = 0;
 GLfloat doorRotation = 0;
+const double pi = 3.14159265359;
 void Spin()
 {
 	//T = T + 0.01;
@@ -210,38 +211,14 @@ void Cuboid(GLfloat vertices[8][3]) {
 		glVertex3fv(vertices[i]);
 	glEnd();
 	// Draw buttom
-	glBegin(GL_QUADS);
+	glBegin(GL_POLYGON);
 	for (int i = 4; i < 8; i++)
 		glVertex3fv(vertices[i]);
 	glEnd();
 
 	// Draw sides
 	for (int i = 0; i < 4; i++) {
-		glBegin(GL_QUADS);
-		int nxt = (i + 1) % 4;
-		glVertex3fv(vertices[i]);
-		glVertex3fv(vertices[nxt]);
-		glVertex3fv(vertices[nxt + 4]);
-		glVertex3fv(vertices[i + 4]);
-		glEnd();
-	}
-}
-
-void OpenCuboid(GLfloat vertices[8][3]) {
-	// Draw top
-	glBegin(GL_POLYGON);
-	for (int i = 0; i < 4; i++)
-		glVertex3fv(vertices[i]);
-	glEnd();
-	// Draw buttom
-	glBegin(GL_QUADS);
-	for (int i = 4; i < 8; i++)
-		glVertex3fv(vertices[i]);
-	glEnd();
-
-	// Draw sides
-	for (int i = 0; i < 4; i++)if (i != 1 && i != 3) {
-		glBegin(GL_QUADS);
+		glBegin(GL_POLYGON);
 		int nxt = (i + 1) % 4;
 		glVertex3fv(vertices[i]);
 		glVertex3fv(vertices[nxt]);
@@ -264,7 +241,7 @@ void PointToCuboid(GLfloat center[3]) {
 		{center[0] + dist, center[1] + dist, center[2] + dist},
 		{center[0] - dist, center[1] + dist, center[2] + dist}
 	};
-	OpenCuboid(OC);
+	Cuboid(OC);
 }
 
 
@@ -279,78 +256,80 @@ void Wheel(GLfloat center[3], float radius) {
 	}
 }
 
-void BicylceFront() {
+void WheelBody(double x1, double x2, double y1, double y2, double z1, double z2, double diff, bool rear = false) {
+	
 	// Wheel body
-	GLfloat C1[8][3] = {
-		{-0.42, -0.45, 0.7},
-		{-0.41, -0.45, 0.7},
-		{-0.41, -0.45, 0.71},
-		{-0.42, -0.45, 0.71},
+	GLfloat C[4][8][3] = {
+	{
+		{x2 - diff, y1, z1},
+		{x2, y1, z1},
+		{x2, y1, z1 - diff},
+		{x2 - diff, y1, z1 - diff},
 
-		{-0.38, -0.35, 0.7},
-		{-0.37, -0.35, 0.7},
-		{-0.37, -0.35, 0.71},
-		{-0.38, -0.35, 0.71}
-	};
+		{x1 - diff, y2, z1},
+		{x1, y2, z1},
+		{x1, y2, z1 - diff},
+		{x1 - diff, y2, z1 - diff}
+	},
+	{
+		{x2 - diff, y1, z2},
+		{x2, y1, z2},
+		{x2, y1, z2 - diff},
+		{x2 - diff, y1, z2 - diff},
 
-	GLfloat C2[8][3] = {
-		{-0.42, -0.45, 0.73},
-		{-0.41, -0.45, 0.73},
-		{-0.41, -0.45, 0.74},
-		{-0.42, -0.45, 0.74},
+		{x1 - diff, y2, z2},
+		{x1, y2, z2},
+		{x1, y2, z2 - diff},
+		{x1 - diff, y2, z2 - diff}
+	},
+	{
+		{x2 - diff, y1, z1},
+		{x2, y1, z1},
+		{x2, y1, z2 - diff},
+		{x2 - diff, y1, z2 - diff},
 
-		{-0.38, -0.35, 0.73},
-		{-0.37, -0.35, 0.73},
-		{-0.37, -0.35, 0.74},
-		{-0.38, -0.35, 0.74}
-	};
+		{x2 - diff, y1 - diff, z1},
+		{x2, y1 - diff, z1},
+		{x2, y1 - diff, z2 - diff},
+		{x2 - diff, y1 - diff, z2 - diff},
+	},
+	{
+		{x1 - diff, y2, z1},
+		{x1, y2, z1},
+		{x1, y2, z2 - diff},
+		{x1 - diff, y2, z2 - diff},
 
-	GLfloat C3[8][3] = {
-		{-0.42, -0.45, 0.7},
-		{-0.41, -0.45, 0.7},
-		{-0.41, -0.45, 0.74},
-		{-0.42, -0.45, 0.74},
-
-		{-0.42, -0.46, 0.7},
-		{-0.41, -0.46, 0.7},
-		{-0.41, -0.46, 0.74},
-		{-0.42, -0.46, 0.74},
-	};
-
-	GLfloat C4[8][3] = {
-		{-0.38, -0.35, 0.7},
-		{-0.37, -0.35, 0.7},
-		{-0.37, -0.35, 0.74},
-		{-0.38, -0.35, 0.74},
-
-		{-0.38, -0.36, 0.7},
-		{-0.37, -0.36, 0.7},
-		{-0.37, -0.36, 0.74},
-		{-0.38, -0.36, 0.74},
+		{x1 - diff, y2 - diff, z1},
+		{x1, y2 - diff, z1},
+		{x1, y2 - diff, z2 - diff},
+		{x1 - diff, y2 - diff, z2 - diff},
+	}
 	};
 
 
 	glColor3f(0, 0, 0);
-	Cuboid(C1);
-	Cuboid(C2);
-	Cuboid(C3);
-	Cuboid(C4);
+	for (int i = 0; i < 4; i++)
+		Cuboid(C[i]);
 
 	// wheel itself
-	GLfloat WheelCentre[3] = { -0.42, -0.45, 0.72 };
+	GLfloat WheelCentre[3] = { x2 - diff, y1, (z1 + z2) / 2};
+	if(rear)
+		WheelCentre[0] = x1 - diff, WheelCentre[1] = y2;
 	Wheel(WheelCentre, 0.04);
 
-	double pi = 3.14159265359;
 	GLfloat dist = 0.006;
 	GLfloat r = 0.04;
 	double ratio = 0.6;
+	double rad = ratio * 2 * pi;
+	double sinRes = r * sin(rad);
+	double cosRes = r * cos(rad);
 	// Wheel support
 	GLfloat Support[3][8][3] = {
 		{
-			{WheelCentre[0] - dist - r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] - dist},
-			{WheelCentre[0] + dist - r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] - dist},
-			{WheelCentre[0] + dist - r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] + dist},
-			{WheelCentre[0] - dist - r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] + dist},
+			{WheelCentre[0] - dist - cosRes, WheelCentre[1] - dist + sinRes, WheelCentre[2] - dist},
+			{WheelCentre[0] + dist - cosRes, WheelCentre[1] - dist + sinRes, WheelCentre[2] - dist},
+			{WheelCentre[0] + dist - cosRes, WheelCentre[1] - dist + sinRes, WheelCentre[2] + dist},
+			{WheelCentre[0] - dist - cosRes, WheelCentre[1] - dist + sinRes, WheelCentre[2] + dist},
 
 			{WheelCentre[0] - dist, WheelCentre[1] - dist, WheelCentre[2] - dist},
 			{WheelCentre[0] + dist, WheelCentre[1] - dist, WheelCentre[2] - dist},
@@ -369,10 +348,10 @@ void BicylceFront() {
 			{WheelCentre[0] - dist, WheelCentre[1] - dist + r, WheelCentre[2] + dist},
 		},
 		{
-			{WheelCentre[0] - dist + r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] - dist},
-			{WheelCentre[0] + dist + r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] - dist},
-			{WheelCentre[0] + dist + r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] + dist},
-			{WheelCentre[0] - dist + r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] + dist},
+			{WheelCentre[0] - dist + cosRes, WheelCentre[1] - dist + sinRes, WheelCentre[2] - dist},
+			{WheelCentre[0] + dist + cosRes, WheelCentre[1] - dist + sinRes, WheelCentre[2] - dist},
+			{WheelCentre[0] + dist + cosRes, WheelCentre[1] - dist + sinRes, WheelCentre[2] + dist},
+			{WheelCentre[0] - dist + cosRes, WheelCentre[1] - dist + sinRes, WheelCentre[2] + dist},
 
 			{WheelCentre[0] - dist, WheelCentre[1] - dist, WheelCentre[2] - dist},
 			{WheelCentre[0] + dist, WheelCentre[1] - dist, WheelCentre[2] - dist},
@@ -385,155 +364,49 @@ void BicylceFront() {
 		Cuboid(Support[i]);
 }
 
-void BicycleRear() {
-	// Wheel body
-	double x1 = -0.25, x2 = -0.29, diff = 0.01;
-	GLfloat C1[8][3] = {
-		{x1, -0.45, 0.7},
-		{x1 - diff, -0.45, 0.7},
-		{x1 - diff, -0.45, 0.71},
-		{x1, -0.45, 0.71},
-
-		{x2, -0.35, 0.7},
-		{x2 - diff, -0.35, 0.7},
-		{x2 - diff, -0.35, 0.71},
-		{x2, -0.35, 0.71}
-	};
-
-	GLfloat C2[8][3] = {
-		{x1, -0.45, 0.73},
-		{x1 - diff, -0.45, 0.73},
-		{x1 - diff, -0.45, 0.74},
-		{x1, -0.45, 0.74},
-
-		{x2, -0.35, 0.73},
-		{x2 - diff, -0.35, 0.73},
-		{x2 - diff, -0.35, 0.74},
-		{x2, -0.35, 0.74}
-	};
-
-	GLfloat C3[8][3] = {
-		{x1, -0.45, 0.7},
-		{x1 - diff, -0.45, 0.7},
-		{x1 - diff, -0.45, 0.74},
-		{x1, -0.45, 0.74},
-
-		{x1, -0.46, 0.7},
-		{x1 - diff, -0.46, 0.7},
-		{x1 - diff, -0.46, 0.74},
-		{x1, -0.46, 0.74}
-	};
-
-	GLfloat C4[8][3] = {
-		{x2, -0.35, 0.7},
-		{x2 - diff, -0.35, 0.7},
-		{x2 - diff, -0.35, 0.74},
-		{x2, -0.35, 0.74},
-
-		{x2, -0.36, 0.7},
-		{x2 - diff, -0.36, 0.7},
-		{x2 - diff, -0.36, 0.74},
-		{x2, -0.36, 0.74}
-	};
-
-	glColor3f(0, 0, 0);
-	Cuboid(C1);
-	Cuboid(C2);
-	Cuboid(C3);
-	Cuboid(C4);
-
-	// wheel itself
-	GLfloat WheelCentre[3] = { x1, -0.45, 0.72 };
-	Wheel(WheelCentre, 0.04);
-
-	double pi = 3.14159265359;
-	GLfloat dist = 0.006;
-	GLfloat r = 0.04;
-	double ratio = 0.6;
-	// Wheel support
-	GLfloat Support[3][8][3] = {
-		{
-			{WheelCentre[0] - dist - r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] - dist},
-			{WheelCentre[0] + dist - r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] - dist},
-			{WheelCentre[0] + dist - r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] + dist},
-			{WheelCentre[0] - dist - r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] + dist},
-
-			{WheelCentre[0] - dist, WheelCentre[1] - dist, WheelCentre[2] - dist},
-			{WheelCentre[0] + dist, WheelCentre[1] - dist, WheelCentre[2] - dist},
-			{WheelCentre[0] + dist, WheelCentre[1] - dist, WheelCentre[2] + dist},
-			{WheelCentre[0] - dist, WheelCentre[1] - dist, WheelCentre[2] + dist},
-		},
-		{
-			{WheelCentre[0] - dist, WheelCentre[1] - dist, WheelCentre[2] - dist},
-			{WheelCentre[0] + dist, WheelCentre[1] - dist, WheelCentre[2] - dist},
-			{WheelCentre[0] + dist, WheelCentre[1] - dist, WheelCentre[2] + dist},
-			{WheelCentre[0] - dist, WheelCentre[1] - dist, WheelCentre[2] + dist},
-
-			{WheelCentre[0] - dist, WheelCentre[1] - dist + r, WheelCentre[2] - dist},
-			{WheelCentre[0] + dist, WheelCentre[1] - dist + r, WheelCentre[2] - dist},
-			{WheelCentre[0] + dist, WheelCentre[1] - dist + r, WheelCentre[2] + dist},
-			{WheelCentre[0] - dist, WheelCentre[1] - dist + r, WheelCentre[2] + dist},
-		},
-		{
-			{WheelCentre[0] - dist + r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] - dist},
-			{WheelCentre[0] + dist + r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] - dist},
-			{WheelCentre[0] + dist + r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] + dist},
-			{WheelCentre[0] - dist + r * cos(ratio * 2 * pi), WheelCentre[1] - dist + r * sin(ratio * 2 * pi), WheelCentre[2] + dist},
-
-			{WheelCentre[0] - dist, WheelCentre[1] - dist, WheelCentre[2] - dist},
-			{WheelCentre[0] + dist, WheelCentre[1] - dist, WheelCentre[2] - dist},
-			{WheelCentre[0] + dist, WheelCentre[1] - dist, WheelCentre[2] + dist},
-			{WheelCentre[0] - dist, WheelCentre[1] - dist, WheelCentre[2] + dist},
-		}
-	};
-
-	for (int i = 0; i < 3; i++)
-		Cuboid(Support[i]);
-}
-
-void BicycleMid() {
-	double x1 = -0.25, x2 = -0.29, diff = 0.01, cdiff = 0.01;
+void BicycleMid(double x1, double x2, double y1, double y2, double z1, double diff) {
+	double cdiff = 0.01;
 
 	GLfloat C1[8][3] = {
-		{x1, -0.45, 0.7},
-		{x1 - diff, -0.45, 0.7},
-		{x1 - diff, -0.45, 0.71},
-		{x1, -0.45, 0.71},
+		{x1, y2, z1 - diff},
+		{x1 - diff, y2, z1 - diff},
+		{x1 - diff, y2, z1},
+		{x1, y2, z1},
 
-		{-0.38, -0.35, 0.7},
-		{-0.37, -0.35, 0.7},
-		{-0.37, -0.35, 0.71},
-		{-0.38, -0.35, 0.71}
+		{x1 - 0.13, y1, z1 - diff},
+		{x1 - 0.12, y1, z1 - diff},
+		{x1 - 0.12, y1, z1},
+		{x1 - 0.13, y1, z1}
 	};
 
 	Cuboid(C1);
 
 	// Chair
 	GLfloat Chair[8][3] = {
-		{x2 + cdiff, -0.35, 0.7},
-		{x2 - diff - cdiff, -0.35, 0.7},
-		{x2 - diff - cdiff, -0.35, 0.71},
-		{x2 + cdiff, -0.35, 0.71},
+		{x2 + cdiff, y1, z1 - 0.01},
+		{x2 - diff - cdiff, y1, z1 - 0.01},
+		{x2 - diff - cdiff, y1, z1},
+		{x2 + cdiff, y1, z1},
 
-		{x2 + cdiff, -0.37, 0.7},
-		{x2 - diff - cdiff, -0.37, 0.7},
-		{x2 - diff - cdiff, -0.37, 0.71},
-		{x2 + cdiff, -0.37, 0.71}
+		{x2 + cdiff, y1 - 0.02, z1 - 0.01},
+		{x2 - diff - cdiff, y1 - 0.02, z1 - 0.01},
+		{x2 - diff - cdiff, y1 - 0.02, z1},
+		{x2 + cdiff, y1 - 0.02, z1}
 	};
 
 	Cuboid(Chair);
 
 	// Handle support
 	GLfloat Support[8][3] = {
-		{-0.38, -0.35, 0.7},
-		{-0.37, -0.35, 0.7},
-		{-0.37, -0.35, 0.71},
-		{-0.38, -0.35, 0.71},
+		{x1 - 0.13, y1, z1},
+		{x1 - 0.12, y1, z1},
+		{x1 - 0.12, y1, z1 + diff},
+		{x1 - 0.13, y1, z1 + diff},
 
-		{-0.38, -0.32, 0.7},
-		{-0.37, -0.32, 0.7},
-		{-0.37, -0.32, 0.71},
-		{-0.38, -0.32, 0.71}
+		{x1 - 0.13, y1 + 0.03, z1},
+		{x1 - 0.12, y1 + 0.03, z1},
+		{x1 - 0.12, y1 + 0.03, z1 + diff},
+		{x1 - 0.13, y1 + 0.03, z1 + diff}
 	};
 
 	Cuboid(Support);
@@ -541,25 +414,27 @@ void BicycleMid() {
 	// Handle
 
 	GLfloat Handle[8][3] = {
-		{-0.38, -0.31, 0.69},
-		{-0.37, -0.31, 0.69},
-		{-0.37, -0.31, 0.75},
-		{-0.38, -0.31, 0.75},
+		{x1 - 0.13, y1 + 0.04, z1 - 0.02},
+		{x1 - 0.12, y1 + 0.04, z1 - 0.02},
+		{x1 - 0.12, y1 + 0.04, z1 + 0.04},
+		{x1 - 0.13, y1 + 0.04, z1 + 0.04},
 
-		{-0.38, -0.32, 0.69},
-		{-0.37, -0.32, 0.69},
-		{-0.37, -0.32, 0.75},
-		{-0.38, -0.32, 0.75},
+		{x1 - 0.13, y1 + 0.03, z1 - 0.02},
+		{x1 - 0.12, y1 + 0.03, z1 - 0.02},
+		{x1 - 0.12, y1 + 0.03, z1 + 0.04},
+		{x1 - 0.13, y1 + 0.03, z1 + 0.04},
 	};
 
 	Cuboid(Handle);
 }
 
 void DrawBike() {
-	BicylceFront();
-	BicycleRear();
+	// Front wheel
+	WheelBody(-0.37, -0.41, -0.44, -0.34, 0.9, 0.93, 0.01);
+	// Rear wheel
+	WheelBody(-0.25, -0.29, -0.34, -0.44, 0.9, 0.93, 0.01, true);
 	// Connect the two wheels
-	BicycleMid();
+	BicycleMid(-0.25, -0.29, -0.34, -0.44, 0.91, 0.01);
 }
 
 void button(unsigned char button, int x, int y) {
