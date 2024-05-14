@@ -8,15 +8,21 @@ using namespace std;
 
 GLfloat Cx = 0, Cy = 0, Cz = 3;
 GLfloat T = 0;
+GLfloat wheelRot = 0;
 GLfloat doorRotation = 0;
 GLfloat windowRotation = 0;
+GLfloat rotations[3] = { -30, 0, 35 };
+int rotInd = 1;
 
-const double pi = 3.14159265359;
+const GLfloat pi = 3.14159265359;
+GLfloat moveX = 0.0;
+bool aroundHouse = false;
+
 void Spin()
 {
-	//T = T + 0.01;
-	if (T > 360)
-		T = 0;
+	if(aroundHouse)
+		T = T - 0.25;
+
 	glutPostRedisplay();
 }
 void Ground() {
@@ -182,12 +188,6 @@ void DrawHouse()
 
 	};
 
-	
-	// rotate be button el t
-	glRotatef(T, 0, 1, 0);
-
-
-
 	// draw the 1st floor walls
 	glColor3f(0.8f, 0.6f, 0.4f);
 	Rectangle(floor1[0], floor1[1], floor1[2], floor1[3], floor1[4], floor1[5], floor1[6], floor1[7]);
@@ -228,8 +228,6 @@ void DrawHouse()
 	RectangleFace(Window2[0], Window2[1], Window2[2], Window2[3]);
 	RectangleFace(Window3[0], Window3[1], Window3[2], Window3[3]);
 	RectangleFace(Window4[0], Window4[1], Window4[2], Window4[3]);
-
-	
 }
 
 
@@ -275,18 +273,17 @@ void PointToCuboid(GLfloat center[3]) {
 
 
 void Wheel(GLfloat center[3], float radius) {
-	double pi = 3.14159265359;
+	GLfloat pi = 3.14159265359;
 	int seg = 60;
 	for (int i = 0; i < seg; i += 1) {
-		GLfloat x = radius * cos(((double)i / (double)seg) * 2 * pi);
-		GLfloat y = radius * sin(((double)i / (double)seg) * 2 * pi);
+		GLfloat x = radius * cos(((GLfloat)i / (GLfloat)seg) * 2 * pi);
+		GLfloat y = radius * sin(((GLfloat)i / (GLfloat)seg) * 2 * pi);
 		GLfloat p[3] = { center[0] + x, center[1] + y, center[2] };
 		PointToCuboid(p);
 	}
 }
 
-void WheelBody(double x1, double x2, double y1, double y2, double z1, double z2, double diff, bool rear = false) {
-	
+void WheelBody(GLfloat x1, GLfloat x2, GLfloat y1, GLfloat y2, GLfloat z1, GLfloat z2, GLfloat diff, bool rear = false) {
 	// Wheel body
 	GLfloat C[4][8][3] = {
 	{
@@ -346,12 +343,46 @@ void WheelBody(double x1, double x2, double y1, double y2, double z1, double z2,
 		WheelCentre[0] = x1 - diff, WheelCentre[1] = y2;
 	Wheel(WheelCentre, 0.04);
 
+	if (!rear) {
+		// Handle support
+		GLfloat midZ = (z1 + z2) / 2;
+		GLfloat Support[8][3] = {
+			{x1 - diff, y2, midZ},
+			{x1, y2, midZ},
+			{x1, y2, midZ - diff},
+			{x1 - diff, y2, midZ - diff},
+
+			{x1 - diff, y2 + 0.03, midZ},
+			{x1, y2 + 0.03, midZ},
+			{x1, y2 + 0.03, midZ - diff},
+			{x1 - diff, y2 + 0.03, midZ - diff}
+		};
+
+		Cuboid(Support);
+
+		// Handle
+
+		GLfloat Handle[8][3] = {
+			{x1 - diff, y2 + 0.03, midZ + 0.03},
+			{x1, y2 + 0.03, midZ + 0.03},
+			{x1, y2 + 0.03, midZ - diff - 0.03},
+			{x1 - diff, y2 + 0.03, midZ - diff - 0.03},
+
+			{x1 - diff, y2 + 0.04, midZ + 0.03},
+			{x1, y2 + 0.04, midZ + 0.03},
+			{x1, y2 + 0.04, midZ - diff - 0.03},
+			{x1 - diff, y2 + 0.04, midZ - diff - 0.03}
+		};
+
+		Cuboid(Handle);
+	}
+
 	GLfloat dist = 0.006;
 	GLfloat r = 0.04;
-	double ratio = 0.6;
-	double rad = ratio * 2 * pi;
-	double sinRes = r * sin(rad);
-	double cosRes = r * cos(rad);
+	GLfloat ratio = 0.6;
+	GLfloat rad = ratio * 2 * pi;
+	GLfloat sinRes = r * sin(rad);
+	GLfloat cosRes = r * cos(rad);
 	// Wheel support
 	GLfloat Support[3][8][3] = {
 		{
@@ -393,8 +424,8 @@ void WheelBody(double x1, double x2, double y1, double y2, double z1, double z2,
 		Cuboid(Support[i]);
 }
 
-void BicycleMid(double x1, double x2, double y1, double y2, double z1, double diff) {
-	double cdiff = 0.01;
+void BicycleMid(GLfloat x1, GLfloat x2, GLfloat y1, GLfloat y2, GLfloat z1, GLfloat diff) {
+	GLfloat cdiff = 0.01;
 
 	GLfloat C1[8][3] = {
 		{x1, y2, z1 - diff},
@@ -424,46 +455,37 @@ void BicycleMid(double x1, double x2, double y1, double y2, double z1, double di
 	};
 
 	Cuboid(Chair);
-
-	// Handle support
-	GLfloat Support[8][3] = {
-		{x1 - 0.13, y1, z1},
-		{x1 - 0.12, y1, z1},
-		{x1 - 0.12, y1, z1 + diff},
-		{x1 - 0.13, y1, z1 + diff},
-
-		{x1 - 0.13, y1 + 0.03, z1},
-		{x1 - 0.12, y1 + 0.03, z1},
-		{x1 - 0.12, y1 + 0.03, z1 + diff},
-		{x1 - 0.13, y1 + 0.03, z1 + diff}
-	};
-
-	Cuboid(Support);
-
-	// Handle
-
-	GLfloat Handle[8][3] = {
-		{x1 - 0.13, y1 + 0.04, z1 - 0.02},
-		{x1 - 0.12, y1 + 0.04, z1 - 0.02},
-		{x1 - 0.12, y1 + 0.04, z1 + 0.04},
-		{x1 - 0.13, y1 + 0.04, z1 + 0.04},
-
-		{x1 - 0.13, y1 + 0.03, z1 - 0.02},
-		{x1 - 0.12, y1 + 0.03, z1 - 0.02},
-		{x1 - 0.12, y1 + 0.03, z1 + 0.04},
-		{x1 - 0.13, y1 + 0.03, z1 + 0.04},
-	};
-
-	Cuboid(Handle);
 }
 
 void DrawBike() {
+	glPushMatrix();
+	glRotatef(T, 0, 1, 0);
 	// Front wheel
-	WheelBody(-0.37, -0.41, -0.44, -0.34, 0.9, 0.93, 0.01);
-	// Rear wheel
-	WheelBody(-0.25, -0.29, -0.34, -0.44, 0.9, 0.93, 0.01, true);
+	glPushMatrix();
+	if(rotInd == 0)
+		glTranslatef(0.475, 0, 0.115);
+	else if(rotInd == 2)
+		glTranslatef(-0.51, 0, 0.14);
+	glRotatef(wheelRot, 0, 1, 0);
+
+	WheelBody(-0.02 + moveX, -0.06 + moveX, -0.44, -0.34, 0.9, 0.93, 0.01);
+	glPopMatrix();
 	// Connect the two wheels
-	BicycleMid(-0.25, -0.29, -0.34, -0.44, 0.91, 0.01);
+	BicycleMid(0.1 + moveX, 0.06 + moveX, -0.34, -0.44, 0.91, 0.01);
+	// Rear wheel
+	WheelBody(0.1 + moveX, 0.06 + moveX, -0.34, -0.44, 0.9, 0.93, 0.01, true);
+	glPopMatrix();
+}
+
+void mouseclk(int button, int state, int x, int y) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		moveX = 0;
+		aroundHouse = true;
+	}
+	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		moveX = 0;
+		aroundHouse = false;
+	}
 }
 
 void button(unsigned char button, int x, int y) {
@@ -481,18 +503,30 @@ void button(unsigned char button, int x, int y) {
 		windowRotation = 0.0f;
 		break;
 	case 'f': 
+		moveX -= 0.05;
+		rotInd = 1;
+		T = 0;
+		aroundHouse = false;
 		break;
 	case 'b':
+		moveX += 0.05;
+		rotInd = 1;
+		T = 0;
+		aroundHouse = false;
 		break;
 	case 'r':
+		moveX = 0;
+		if (rotInd != 0) {
+			rotInd--;
+			wheelRot = rotations[rotInd];
+		}
 		break;
 	case 'l':
-		break;
-
-
-
-	case 't':  // rotate 3shan el test
-		T += 5.0;
+		moveX = 0;
+		if (rotInd != 2) {
+			rotInd++;
+			wheelRot = rotations[rotInd];
+		}
 		break;
 
 	// camera hotkeys
@@ -552,6 +586,7 @@ int main(int argc, char* argv[])
 	glutCreateWindow("Basic OpenGL program");
 
 	MyInit();
+	glutMouseFunc(mouseclk);
 	glutKeyboardFunc(button);
 	// ptr to function to execute and display
 	glutDisplayFunc(Display);
