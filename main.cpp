@@ -9,6 +9,8 @@ using namespace std;
 GLfloat Cx = 0, Cy = 0, Cz = 3;
 GLfloat T = 0;
 GLfloat doorRotation = 0;
+GLfloat windowRotation = 0;
+
 const double pi = 3.14159265359;
 void Spin()
 {
@@ -39,14 +41,30 @@ void MyInit()
 {
 	glClearColor(0, 1, 0, 1);
 	glEnable(GL_DEPTH_TEST);
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glFrustum(-1, 1, -1, 1, 2, 10);
 	glMatrixMode(GL_MODELVIEW);
 }
 
-
+void openRightWindows() {
+	if (windowRotation) {
+		glTranslatef(-0.265f, 0.001f, 0.642f);
+		glRotatef(windowRotation, 0, 1, 0);
+	}
+}
+void openLeftWindows() {
+	if (windowRotation) {
+		glTranslatef(-0.62f, 0.001f, 0.163f);
+		glRotatef(windowRotation, 0, 1, 0);
+	}
+}
+void openDoor() {
+	if (doorRotation == 73.0f) {
+		glTranslatef(-0.44f, 0.0f, 0.4f);
+		glRotatef(doorRotation, 0, 1, 0);
+	}
+}
 void PyramidFace(GLfloat A[], GLfloat B[], GLfloat C[])
 {
 	glBegin(GL_POLYGON);
@@ -103,29 +121,6 @@ void DrawHouse()
 		{0.5, -0.5, -0.5},
 		{-0.5, -0.5, -0.5},
 	};
-	// left window 
-	GLfloat Window1[4][3] = {
-		{0.30, -0.2, 0.50001},
-		{0.20, -0.2, 0.50001},
-		{0.20, -0.3, 0.50001},
-		{0.30, -0.3, 0.50001}
-	};
-	// right window
-	GLfloat Window2[4][3] = {
-		{-0.30, -0.2, 0.50001},
-		{-0.20, -0.2, 0.50001},
-		{-0.20, -0.3, 0.50001},
-		{-0.30, -0.3, 0.50001}
-	};
-	// door
-	GLfloat Door[4][3] = {
-		{0.05, -0.5, 0.50001},
-		{0.05, -0.3, 0.50001},
-		{-0.05, -0.3, 0.50001},
-		{-0.05, -0.5, 0.50001}
-	};
-	// rotate around (-0.05, -0.4, 0.50001)
-	// 
 	// 2nd floor	
 	GLfloat floor2[8][3] = {
 		// front face
@@ -139,20 +134,42 @@ void DrawHouse()
 		{0.5, -0.0, -0.5},
 		{-0.5, -0.0, -0.5},
 	};
-	// left window 
+	// lower right
+	GLfloat Window1[4][3] = {
+		{0.20, -0.2, 0.50001},  // upperleft
+		{0.30, -0.2, 0.50001}, // upper right
+		{0.30, -0.3, 0.50001}, // bottom right
+		{0.20, -0.3, 0.50001} // bottom left
+	};
+	// lower left
+	GLfloat Window2[4][3] = {
+		{-0.30, -0.2, 0.50001}, // upper left
+		{-0.20, -0.2, 0.50001}, // upper right
+		{-0.20, -0.3, 0.50001}, // lower right
+		{-0.30, -0.3, 0.50001}  // lower left
+	};
+	// upper right 
 	GLfloat Window3[4][3] = {
 		{0.30, 0.2, 0.50001},
 		{0.20, 0.2, 0.50001},
 		{0.20, 0.3, 0.50001},
 		{0.30, 0.3, 0.50001}
 	};
-	// right window
+	// upper left 
 	GLfloat Window4[4][3] = {
 		{-0.30, 0.2, 0.50001},
 		{-0.20, 0.2, 0.50001},
 		{-0.20, 0.3, 0.50001},
 		{-0.30, 0.3, 0.50001}
 	};
+	// door
+	GLfloat Door[4][3] = {
+		{0.05, -0.5, 0.5001},
+		{0.05, -0.3, 0.5001},
+		{-0.05, -0.3, 0.5001},
+		{-0.05, -0.5, 0.5001}
+	};
+
 	// roof
 	GLfloat Roof[5][3] = {
 		// pyramid tip
@@ -165,8 +182,8 @@ void DrawHouse()
 
 	};
 
-
-
+	
+	// rotate be button el t
 	glRotatef(T, 0, 1, 0);
 
 
@@ -175,34 +192,46 @@ void DrawHouse()
 	glColor3f(0.8f, 0.6f, 0.4f);
 	Rectangle(floor1[0], floor1[1], floor1[2], floor1[3], floor1[4], floor1[5], floor1[6], floor1[7]);
 
-
-
-	// window
-	glColor3f(1, 1, 1);
-	RectangleFace(Window1[0], Window1[1], Window1[2], Window1[3]);
-	RectangleFace(Window2[0], Window2[1], Window2[2], Window2[3]);
-
-
-	glPushMatrix();
-	glRotatef(doorRotation, 0, 1, 0);
-	glTranslatef(-0.05f, 0.0f, 0.00001f);
-	RectangleFace(Door[0], Door[1], Door[2], Door[3]);
-	glPopMatrix();
-
 	// draw the 2nd floor walls
 	glColor3f(0.8f, 0.7f, 0.5f);
 	Rectangle(floor2[0], floor2[1], floor2[2], floor2[3], floor2[4], floor2[5], floor2[6], floor2[7]);
 
-	// window
+	// windows
 	glColor3f(1, 1, 1);
-	RectangleFace(Window3[0], Window3[1], Window3[2], Window3[3]);
-	RectangleFace(Window4[0], Window4[1], Window4[2], Window4[3]);
+	// windows on the right side
+	glPushMatrix();
+		openRightWindows();
+		RectangleFace(Window1[0], Window1[1], Window1[2], Window1[3]);
+		RectangleFace(Window3[0], Window3[1], Window3[2], Window3[3]);
+	glPopMatrix();
+	// windows on the left side
+	glPushMatrix();
+		openLeftWindows();
+		RectangleFace(Window2[0], Window2[1], Window2[2], Window2[3]);
+		RectangleFace(Window4[0], Window4[1], Window4[2], Window4[3]);
+	glPopMatrix();
 
+	// door
+	glPushMatrix(); 
+		openDoor();
+		RectangleFace(Door[0], Door[1], Door[2], Door[3]);
+	glPopMatrix();
+	
 	// draw roof
 	glColor3f(0.7f, 0.2f, 0.1f);
 	Pyramid(Roof[0], Roof[1], Roof[2], Roof[3], Roof[4]);
+	
+	// shadows
+	glColor3f(0, 0, 0);
+	RectangleFace(Door[0], Door[1], Door[2], Door[3]);
+	RectangleFace(Window1[0], Window1[1], Window1[2], Window1[3]);
+	RectangleFace(Window2[0], Window2[1], Window2[2], Window2[3]);
+	RectangleFace(Window3[0], Window3[1], Window3[2], Window3[3]);
+	RectangleFace(Window4[0], Window4[1], Window4[2], Window4[3]);
 
+	
 }
+
 
 void Cuboid(GLfloat vertices[8][3]) {
 	// Draw top
@@ -438,23 +467,20 @@ void DrawBike() {
 }
 
 void button(unsigned char button, int x, int y) {
-	cout << x << " " << y << endl;
 	switch (button) {
-	case 'o':
-		//296
-		doorRotation += 2.0;
-		cout << doorRotation << endl;
+	case 'o': 
+		doorRotation = 73.0f;
 		break;
-	case 'c':
+	case 'c': 
+		doorRotation = 0.0f;
 		break;
-	case 'O':
-		doorRotation = 0;
+	case 'O':  
+		windowRotation = 73.0f;
 		break;
-	case 'C':
-
+	case 'C':  
+		windowRotation = 0.0f;
 		break;
-	case 'f':
-
+	case 'f': 
 		break;
 	case 'b':
 		break;
@@ -469,9 +495,7 @@ void button(unsigned char button, int x, int y) {
 		T += 5.0;
 		break;
 
-
-
-		// camera hotkeys
+	// camera hotkeys
 	case '4':
 		Cx = Cx - 0.5;
 		break;
@@ -490,7 +514,10 @@ void button(unsigned char button, int x, int y) {
 	case '9':
 		Cz = Cz + 0.5;
 		break;
+	default:
+		break;
 	}
+
 	glutPostRedisplay();  // Tell GLUT to redraw the scene (if needed)
 }
 
